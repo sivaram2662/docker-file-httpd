@@ -2,27 +2,22 @@ pipeline {
     agent any
 
     stages {
-        // stage('build image') {
-        //     steps {
-        //         sh "sudo docker build -t apacheimage:1"
-        //     }
-        // }
-        stage('aws cli') {
+        stage('checkout') {
             steps {
-                sh " aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 101275806917.dkr.ecr.ap-south-1.amazonaws.com"
+               git branch: 'main', url: 'git@github.com:sivaram2662/terraform-app.git'
             }
         }
-         stage('build to docker') {
+         stage('login') {
             steps {
-               sh "sudo docker build -t docker-ecr ."
+               sh "aws ecr get-login-password --region ap-south-1 | sudo docker login --username AWS --password-stdin 101275806917.dkr.ecr.ap-south-1.amazonaws.com"
             }
         }
-        stage('build to tag') {
+        stage('build ') {
             steps {
-               sh "sudo docker tag docker-ecr:latest 101275806917.dkr.ecr.ap-south-1.amazonaws.com/docker-ecr:latest"
+               sh "sudo docker build -t 101275806917.dkr.ecr.ap-south-1.amazonaws.com/docker-ecr:latest ."
             }
         }
-        stage('build to push') {
+        stage('push') {
             steps {
                sh " sudo docker push 101275806917.dkr.ecr.ap-south-1.amazonaws.com/docker-ecr:latest"
         }
